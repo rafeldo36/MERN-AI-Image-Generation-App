@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const ImageEditor = ({ generatedImage, updateEditedImage }) => {
+const ImageEditor = ({ generatedImage }) => {
   const [editedImage, setEditedImage] = useState(generatedImage);
   const [brightness, setBrightness] = useState(100);
   const [contrast, setContrast] = useState(100);
@@ -59,6 +59,7 @@ const ImageEditor = ({ generatedImage, updateEditedImage }) => {
     setHue(0);
     setIsInverted(false);
     setSepia(0);
+    setOpacity(100)
   };
 
   return (
