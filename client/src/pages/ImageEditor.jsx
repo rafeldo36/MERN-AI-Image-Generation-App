@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const ImageEditor = ({ generatedImage }) => {
+const ImageEditor = ({ generatedImage, updatedEditedImage }) => {
   const [editedImage, setEditedImage] = useState(generatedImage);
   const [brightness, setBrightness] = useState(100);
   const [contrast, setContrast] = useState(100);
@@ -12,6 +12,19 @@ const ImageEditor = ({ generatedImage }) => {
   const [sepia, setSepia] = useState(0);
   const [opacity, setOpacity] = useState(100);
 
+  useEffect(() => {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    const img = new Image();
+    img.src = generatedImage;
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      context.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) grayscale(${isGrayscale ? 1 : 0}) blur(${blur}px) hue-rotate(${hue}deg) invert(${isInverted ? 1 : 0}) sepia(${sepia}%) opacity(${opacity}%)`;
+      context.drawImage(img, 0, 0, img.width, img.height);
+      setEditedImage(canvas.toDataURL());
+    };
+  }, [generatedImage, brightness, contrast, saturation, isGrayscale, blur, hue, isInverted, sepia, opacity]);
 
   const handleHueChange = (event) => {
     setHue(event.target.value);
@@ -59,7 +72,11 @@ const ImageEditor = ({ generatedImage }) => {
     setHue(0);
     setIsInverted(false);
     setSepia(0);
-    setOpacity(100)
+    setOpacity(100);
+  };
+
+  const handleSaveImage = () => {
+    updatedEditedImage(editedImage);
   };
 
   return (
@@ -71,8 +88,7 @@ const ImageEditor = ({ generatedImage }) => {
           alt="Generated"
           style={{
             filter: `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) grayscale(${isGrayscale ? 1 : 0}) blur(${blur}px) hue-rotate(${hue}deg) invert(${isInverted ? 1 : 0}) sepia(${sepia}%) opacity(${opacity}%)`,
-            width: '480px', // Set your desired width here
-            height: '480px', // Set your desired height here
+            width: '480px',
           }}
         />
         <div>
@@ -97,6 +113,7 @@ const ImageEditor = ({ generatedImage }) => {
           <button type="button" className='mt-3 text-white bg-[#3a3838] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center mx-2' onClick={toggleGrayscale}>{isGrayscale ? 'Remove Grayscale' : 'Apply Grayscale'}</button>
           <button type="button" className='mt-3 text-black bg-[#c2b6b6] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center mx-2' onClick={toggleInvert}>{isInverted ? 'Original Colors' : 'Invert Colors'}</button>
           <button type="button" className='mt-3 text-white bg-[#e03737] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center mx-2' onClick={resetImage}>Reset</button>
+          <button type="button" className='mt-3 text-white bg-[#007bff] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center mx-2' onClick={handleSaveImage}>Save</button>
         </div>
       </div>
     </div>
